@@ -256,7 +256,7 @@
     </div>
 
     <script type="module">
-      // 1. Firebase 라이브러리 로드 (CDN 방식)
+      // 1. Firebase 라이브러리 로드
       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
       import {
         getAuth,
@@ -276,7 +276,7 @@
         orderBy,
       } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-      // 2. Firebase 설정 (제공해주신 설정값 적용)
+      // 2. Firebase 설정
       const firebaseConfig = {
         apiKey: "AIzaSyChA0UcWlJFZCVguYTdbdnMIRFlNL75ksE",
         authDomain: "note-80d93.firebaseapp.com",
@@ -291,26 +291,34 @@
       const auth = getAuth(app);
       const db = getFirestore(app);
 
-      let currentUser = null; // 현재 로그인한 사용자 정보
+      let currentUser = null;
 
       // ==========================================
-      // [A] 로그인 / 회원가입 / 로그아웃 로직
+      // [A] 로그인 / 회원가입 / 아이디 저장 로직
       // ==========================================
-      const emailInput =
-        document.getElementById("loginEmail") ||
-        document.querySelector('input[type="email"]');
-      const pwInput =
-        document.getElementById("loginPw") ||
-        document.querySelector('input[type="password"]');
+      const emailInput = document.querySelector('input[type="email"]');
+      const pwInput = document.querySelector('input[type="password"]');
+      const saveIdCheck = document.getElementById("saveIdCheck");
 
-      // 회원가입
+      // 페이지 로드 시 저장된 아이디 불러오기
+      const savedId = localStorage.getItem("savedId");
+      if (savedId && emailInput) {
+        emailInput.value = savedId;
+        if (saveIdCheck) saveIdCheck.checked = true;
+      }
+
+      // 이메일 도메인 자동 완성 함수 (@가 없으면 자동으로 붙여줌)
+      function completeEmail(val) {
+        return val && !val.includes("@") ? val + "@love2note.com" : val;
+      }
+
+      // 회원가입 버튼
       document.getElementById("signupBtn").onclick = async () => {
-        if (!emailInput.value || !pwInput.value)
-          return alert("이메일과 비밀번호를 입력해주세요.");
+        const email = completeEmail(emailInput.value);
         try {
           const userCredential = await createUserWithEmailAndPassword(
             auth,
-            emailInput.value,
+            email,
             pwInput.value,
           );
           alert("가족이 되신 걸 환영합니다! " + userCredential.user.email);
@@ -319,77 +327,75 @@
         }
       };
 
-      // 로그인
-      // [로그인 버튼 클릭 시]
+      // 로그인 버튼
       document.getElementById("loginBtn").onclick = async () => {
-        let email = emailInput.value;
-        const pw = pwInput.value;
-
-        // 1. 도메인 자동 완성 (@가 없으면 @love2note.com을 붙여줌)
-        if (email && !email.includes("@")) {
-          email = email + "@love2note.com";
-        }
-
+        const email = completeEmail(emailInput.value);
         try {
-          await signInWithEmailAndPassword(auth, email, pw);
+          await signInWithEmailAndPassword(auth, email, pwInput.value);
 
-          // 2. 아이디 저장 체크 여부에 따라 처리
-          if (document.getElementById("saveIdCheck").checked) {
-            // @ 앞부분만 저장할지, 전체를 저장할지 정할 수 있어요. 여기선 입력한 그대로 저장!
+          // 아이디 저장 체크 여부 확인
+          if (saveIdCheck && saveIdCheck.checked) {
             localStorage.setItem("savedId", emailInput.value);
           } else {
             localStorage.removeItem("savedId");
           }
-
           alert("로그인 성공! 반가워요.");
         } catch (error) {
           alert("로그인 실패: 아이디 또는 비밀번호를 확인해 주세요.");
         }
       };
 
-      // [페이지 로드 시 저장된 아이디 불러오기]
-      // onAuthStateChanged 바로 위나 아래에 넣어주세요.
-      const savedId = localStorage.getItem("savedId");
-      if (savedId) {
-        emailInput.value = savedId;
-        document.getElementById("saveIdCheck").checked = true;
-      }
+      // 로그아웃 (PC용)
+      window.handleLogout = () => {
+        signOut(auth).then(() => alert("로그아웃 되었습니다."));
+      };
 
-      // 로그아웃 (추가된 버튼이 있을 경우 작동)
-      const logoutBtn = document.getElementById("logoutBtn");
-      if (logoutBtn) {
-        logoutBtn.onclick = () => {
-          signOut(auth).then(() => alert("로그아웃 되었습니다."));
-        };
-      }
-
-      // 로그인 상태 감지 및 UI 업데이트
+      // 로그인 상태 감지 (PC & 모바일 UI 동시 업데이트)
       onAuthStateChanged(auth, (user) => {
         const loginPanel = document.getElementById("login-panel");
         const userPanel = document.getElementById("user-panel");
         const emailDisplay = document.getElementById("userEmailDisplay");
+        const sidebar = document.getElementById("sidebar");
+
+        // 모바일 전용 로그인 표시 영역 생성/찾기
+        let mobileAuth = document.getElementById("mobileAuthArea");
+        if (!mobileAuth && sidebar) {
+          mobileAuth = document.createElement("div");
+          mobileAuth.id = "mobileAuthArea";
+          mobileAuth.className = "mobile-auth";
+          sidebar.appendChild(mobileAuth);
+        }
 
         if (user) {
           currentUser = user;
           if (loginPanel) loginPanel.hidden = true;
-          if (userPanel) userPanel.hidden = false;
-          if (emailDisplay) emailDisplay.textContent = user.email;
-
-          console.log("로그인됨:", user.uid);
-          loadDailySchedules(user.uid); // 로그인 시 현재 선택된 날짜의 일정 로드
+          if (userPanel) {
+            userPanel.hidden = false;
+            if (emailDisplay) emailDisplay.textContent = user.email;
+            // 프로필 영역에 로그아웃 버튼 연결
+            userPanel.querySelector("button").onclick = window.handleLogout;
+          }
+          if (mobileAuth) {
+            mobileAuth.innerHTML = `<div style="padding:10px; font-size:13px;">👤 <strong>${user.email.split("@")[0]}</strong>님<br><button class="btn btn--ghost w-full" style="margin-top:5px; font-size:11px;" onclick="handleLogout()">로그아웃</button></div>`;
+          }
+          loadDailySchedules(user.uid);
         } else {
           currentUser = null;
           if (loginPanel) loginPanel.hidden = false;
           if (userPanel) userPanel.hidden = true;
+          if (mobileAuth)
+            mobileAuth.innerHTML = `<p style="padding:10px; font-size:12px; color:var(--muted); text-align:center;">로그인이 필요합니다 🍃</p>`;
           document.getElementById("scheduleDisplay").textContent =
-            "로그인 후 일정을 확인할 수 있습니다.";
+            "로그인 후 이용 가능합니다.";
         }
       });
 
       // ==========================================
-      // [B] 뷰 전환 및 화면 제어 로직
+      // [B] 뷰 전환 및 모바일 서랍장 제어
       // ==========================================
       const sideItems = document.querySelectorAll(".sidelist__item[data-view]");
+      const sidebar = document.getElementById("sidebar");
+      const overlay = document.getElementById("sidebarOverlay");
       const sections = {
         schedule: document.getElementById("view-schedule"),
         memo: document.getElementById("view-memo"),
@@ -405,11 +411,26 @@
           item.classList.toggle("is-active", item.dataset.view === viewName);
         });
         const dashboard = document.getElementById("dashboard-area");
-        if (dashboard) {
+        if (dashboard)
           dashboard.style.display = viewName === "schedule" ? "block" : "none";
-        }
+
+        // 모바일에서 메뉴 클릭 시 서랍 닫기
+        if (sidebar) sidebar.classList.remove("is-open");
+        if (overlay) overlay.classList.remove("is-active");
       }
-      window.setView = setView; // HTML onclick에서 접근 가능하도록 전역 설정
+      window.setView = setView;
+
+      // 햄버거 버튼 클릭
+      document.getElementById("menuBtn").onclick = () => {
+        sidebar.classList.add("is-open");
+        overlay.classList.add("is-active");
+      };
+
+      // 오버레이 클릭 시 닫기
+      overlay.onclick = () => {
+        sidebar.classList.remove("is-open");
+        overlay.classList.remove("is-active");
+      };
 
       sideItems.forEach((item) => {
         item.addEventListener("click", (e) => {
@@ -419,7 +440,7 @@
       });
 
       // ==========================================
-      // [C] 달력(Calendar) 관련 로직
+      // [C] 달력 엔진
       // ==========================================
       let today = new Date();
       let viewYear = today.getFullYear();
@@ -445,24 +466,19 @@
           calGrid.appendChild(div);
         });
 
-        for (let i = 0; i < firstDay; i++) {
-          const div = document.createElement("div");
-          calGrid.appendChild(div);
-        }
+        for (let i = 0; i < firstDay; i++)
+          calGrid.appendChild(document.createElement("div"));
 
         for (let d = 1; d <= lastDate; d++) {
           const btn = document.createElement("button");
           btn.className = "calendar-grid__day";
           btn.textContent = d;
-
           if (
             y === today.getFullYear() &&
             m === today.getMonth() &&
             d === today.getDate()
-          ) {
+          )
             btn.classList.add("is-today");
-          }
-
           btn.onclick = () => {
             document
               .querySelectorAll(".calendar-grid__day")
@@ -489,10 +505,9 @@
         selectedDayNum.textContent = d;
         selectedDayName.textContent = `(${weeks[date.getDay()]})`;
 
-        // 날짜 클릭 시 해당 날짜의 폼 텍스트 업데이트 및 일정 새로고침
         const formDateText = document.getElementById("formDateText");
-        if (formDateText)
-          formDateText.textContent = `${y}.${String(m + 1).padStart(2, "0")}.${String(d).padStart(2, "0")}`;
+        const formattedDate = `${y}.${String(m + 1).padStart(2, "0")}.${String(d).padStart(2, "0")}`;
+        if (formDateText) formDateText.textContent = formattedDate;
 
         if (currentUser) loadDailySchedules(currentUser.uid);
       }
@@ -517,12 +532,10 @@
       buildCalendar(viewYear, viewMonth);
 
       // ==========================================
-      // [D] 일정(Schedule) 추가 및 로드 로직
+      // [D] 일정 데이터 처리
       // ==========================================
       const toggleBtn = document.getElementById("toggleCalView");
       const calContainer = document.getElementById("calendarContainer");
-      const openAddBtn = document.getElementById("openAddForm");
-      const closeAddBtn = document.getElementById("closeAddForm");
       const scheduleForm = document.getElementById("scheduleForm");
 
       toggleBtn.onclick = () => {
@@ -530,19 +543,16 @@
         toggleBtn.textContent = isSummary ? "자세히보기" : "간략히보기";
       };
 
-      openAddBtn.onclick = () => {
+      document.getElementById("openAddForm").onclick = () => {
         if (!currentUser) return alert("로그인 후 이용 가능합니다.");
         scheduleForm.hidden = false;
       };
 
-      closeAddBtn.onclick = () => {
-        scheduleForm.hidden = true;
-      };
+      document.getElementById("closeAddForm").onclick = () =>
+        (scheduleForm.hidden = true);
 
-      // 일정 저장 버튼 이벤트
       document.getElementById("saveSchedule").onclick = async () => {
         if (!currentUser) return alert("로그인이 필요합니다!");
-
         const title = document.getElementById("schedTitle").value;
         const content = document.getElementById("schedContent").value;
         const dateStr = document.getElementById("formDateText").textContent;
@@ -567,7 +577,6 @@
         }
       };
 
-      // 일정 불러오기 함수
       async function loadDailySchedules(uid) {
         const selectedDate =
           document.getElementById("formDateText").textContent;
@@ -576,7 +585,6 @@
           where("uid", "==", uid),
           where("date", "==", selectedDate),
         );
-
         const querySnapshot = await getDocs(q);
         const display = document.getElementById("scheduleDisplay");
         display.innerHTML = "";
@@ -596,5 +604,6 @@
         });
       }
     </script>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
   </body>
 </html>
