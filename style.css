@@ -649,3 +649,18 @@ a {
     display: none;
   }
 }
+
+/* PC에서는 모바일 전용 인증 영역을 아예 안 보이게 함 */
+#mobileAuthArea {
+  display: none;
+}
+
+/* 모바일 화면(860px 이하)에서만 다시 보이게 함 */
+@media (max-width: 860px) {
+  #mobileAuthArea {
+    display: block;
+    margin-top: 20px;
+    padding: 15px;
+    border-top: 1px solid var(--line);
+  }
+}
