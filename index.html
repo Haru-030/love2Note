@@ -351,40 +351,82 @@
       };
 
       // 로그인 상태 감지 (PC & 모바일 UI 동시 업데이트)
+      // 로그인 상태 감지 및 UI 업데이트 (PC & 모바일 통합)
       onAuthStateChanged(auth, (user) => {
-        const loginPanel = document.getElementById("login-panel");
-        const userPanel = document.getElementById("user-panel");
+        const loginPanel = document.getElementById("login-panel"); // PC 로그인창
+        const userPanel = document.getElementById("user-panel"); // PC 프로필창
         const emailDisplay = document.getElementById("userEmailDisplay");
         const sidebar = document.getElementById("sidebar");
 
-        // 모바일 전용 로그인 표시 영역 생성/찾기
+        // 모바일 전용 영역 찾거나 생성
         let mobileAuth = document.getElementById("mobileAuthArea");
         if (!mobileAuth && sidebar) {
           mobileAuth = document.createElement("div");
           mobileAuth.id = "mobileAuthArea";
-          mobileAuth.className = "mobile-auth";
           sidebar.appendChild(mobileAuth);
         }
 
         if (user) {
+          // === [로그인 된 상태] ===
           currentUser = user;
+
+          // PC 화면 처리
           if (loginPanel) loginPanel.hidden = true;
           if (userPanel) {
             userPanel.hidden = false;
             if (emailDisplay) emailDisplay.textContent = user.email;
-            // 프로필 영역에 로그아웃 버튼 연결
-            userPanel.querySelector("button").onclick = window.handleLogout;
           }
+
+          // 모바일 서랍 처리 (로그아웃 버튼 보여주기)
           if (mobileAuth) {
-            mobileAuth.innerHTML = `<div style="padding:10px; font-size:13px;">👤 <strong>${user.email.split("@")[0]}</strong>님<br><button class="btn btn--ghost w-full" style="margin-top:5px; font-size:11px;" onclick="handleLogout()">로그아웃</button></div>`;
+            mobileAuth.innerHTML = `
+          <div style="text-align: center;">
+            <p style="font-size: 14px; margin-bottom: 8px;"><strong>${user.email.split("@")[0]}</strong>님 반가워요!</p>
+            <button class="btn btn--ghost w-full" style="font-size:12px;" onclick="handleLogout()">로그아웃</button>
+          </div>
+        `;
           }
           loadDailySchedules(user.uid);
         } else {
+          // === [로그아웃 된 상태] ===
           currentUser = null;
+
+          // PC 화면 처리
           if (loginPanel) loginPanel.hidden = false;
           if (userPanel) userPanel.hidden = true;
-          if (mobileAuth)
-            mobileAuth.innerHTML = `<p style="padding:10px; font-size:12px; color:var(--muted); text-align:center;">로그인이 필요합니다 🍃</p>`;
+
+          // 모바일 서랍 처리 (여기가 핵심! 진짜 로그인 폼을 넣어줍니다)
+          if (mobileAuth) {
+            mobileAuth.innerHTML = `
+          <div class="login-form-mobile" style="display: grid; gap: 8px;">
+            <p style="font-size: 13px; font-weight: 800; margin-bottom: 5px;">로그인이 필요합니다</p>
+            <input class="field__input" id="mEmail" type="email" placeholder="아이디" style="font-size:13px;">
+            <input class="field__input" id="mPw" type="password" placeholder="비밀번호" style="font-size:13px;">
+            <button class="btn btn--primary w-full" style="font-size:13px;" id="mLoginBtn">로그인</button>
+          </div>
+        `;
+
+            // 모바일 전용 로그인 버튼에 이벤트 연결
+            document.getElementById("mLoginBtn").onclick = async () => {
+              const mEmail = document.getElementById("mEmail").value;
+              const mPw = document.getElementById("mPw").value;
+              const finalEmail =
+                mEmail && !mEmail.includes("@")
+                  ? mEmail + "@love2note.com"
+                  : mEmail;
+
+              try {
+                await signInWithEmailAndPassword(auth, finalEmail, mPw);
+                alert("로그인 성공!");
+                sidebar.classList.remove("is-open"); // 로그인 성공 시 서랍 닫기
+                document
+                  .getElementById("sidebarOverlay")
+                  .classList.remove("is-active");
+              } catch (e) {
+                alert("로그인 실패! 정보를 확인하세요.");
+              }
+            };
+          }
           document.getElementById("scheduleDisplay").textContent =
             "로그인 후 이용 가능합니다.";
         }
