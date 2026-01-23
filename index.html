@@ -353,6 +353,7 @@
       // 로그인 상태 감지 (PC & 모바일 UI 동시 업데이트)
       // 로그인 상태 감지 및 UI 업데이트 (PC & 모바일 통합)
       // 로그인 상태 감지 및 UI 업데이트 (PC & 모바일 통합)
+      // 로그인 상태 감지 및 UI 업데이트 (PC & 모바일 통합)
       onAuthStateChanged(auth, (user) => {
         const loginPanel = document.getElementById("login-panel");
         const userPanel = document.getElementById("user-panel");
@@ -366,17 +367,14 @@
           sidebar.appendChild(mobileAuth);
         }
 
-        // 저장된 아이디 가져오기
         const savedId = localStorage.getItem("savedId") || "";
 
         if (user) {
           // === [로그인 된 상태] ===
           currentUser = user;
           if (loginPanel) loginPanel.hidden = true;
-          if (userPanel) {
-            userPanel.hidden = false;
-            if (emailDisplay) emailDisplay.textContent = user.email;
-          }
+          if (userPanel) userPanel.hidden = false;
+          if (emailDisplay) emailDisplay.textContent = user.email;
 
           if (mobileAuth) {
             mobileAuth.innerHTML = `
@@ -394,44 +392,48 @@
           if (userPanel) userPanel.hidden = true;
 
           if (mobileAuth) {
-            // 모바일 서랍 로그인 폼 (아이디 저장 체크박스 추가)
+            // [수정 포인트] 회원가입 버튼을 추가한 로그인 폼
             mobileAuth.innerHTML = `
           <div class="login-form-mobile" style="display: grid; gap: 8px;">
-            <p style="font-size: 13px; font-weight: 800; margin-bottom: 5px; padding-left: 5px;">로그인이 필요합니다</p>
+            <p style="font-size: 13px; font-weight: 800; margin-bottom: 5px; padding-left: 5px;">로그인이 필요합니다 🍃</p>
             <input class="field__input" id="mEmail" type="email" placeholder="아이디" value="${savedId}" style="font-size:13px;">
             <input class="field__input" id="mPw" type="password" placeholder="비밀번호" style="font-size:13px;">
             
-            <div style="display: flex; align-items: center; gap: 6px; padding-left: 5px; margin-bottom: 5px;">
+            <div style="display: flex; align-items: center; gap: 6px; padding-left: 5px;">
               <input type="checkbox" id="mSaveIdCheck" ${savedId ? "checked" : ""} style="cursor: pointer;">
               <label for="mSaveIdCheck" style="font-size: 12px; color: var(--muted); cursor: pointer;">아이디 저장</label>
             </div>
 
-            <button class="btn btn--primary w-full" style="font-size:13px;" id="mLoginBtn">로그인</button>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 5px;">
+              <button class="btn btn--primary w-full" style="font-size:13px;" id="mLoginBtn">로그인</button>
+              <button class="btn btn--ghost w-full" style="font-size:11px; color: var(--muted);" id="mSignupBtn">회원가입</button>
+            </div>
           </div>
         `;
 
-            // 모바일 로그인 버튼 클릭 이벤트
-            document.getElementById("mLoginBtn").onclick = async () => {
+            // --- 모바일 전용 버튼 이벤트 연결 ---
+            const getMEmail = () => {
               const mEmail = document.getElementById("mEmail").value;
+              return mEmail && !mEmail.includes("@")
+                ? mEmail + "@love2note.com"
+                : mEmail;
+            };
+
+            // 모바일 로그인
+            document.getElementById("mLoginBtn").onclick = async () => {
+              const email = getMEmail();
               const mPw = document.getElementById("mPw").value;
               const mSaveCheck =
                 document.getElementById("mSaveIdCheck").checked;
 
-              const finalEmail =
-                mEmail && !mEmail.includes("@")
-                  ? mEmail + "@love2note.com"
-                  : mEmail;
-
               try {
-                await signInWithEmailAndPassword(auth, finalEmail, mPw);
-
-                // 아이디 저장 처리
-                if (mSaveCheck) {
-                  localStorage.setItem("savedId", mEmail);
-                } else {
-                  localStorage.removeItem("savedId");
-                }
-
+                await signInWithEmailAndPassword(auth, email, mPw);
+                if (mSaveCheck)
+                  localStorage.setItem(
+                    "savedId",
+                    document.getElementById("mEmail").value,
+                  );
+                else localStorage.removeItem("savedId");
                 alert("로그인 성공!");
                 sidebar.classList.remove("is-open");
                 document
@@ -439,6 +441,24 @@
                   .classList.remove("is-active");
               } catch (e) {
                 alert("로그인 실패! 정보를 확인하세요.");
+              }
+            };
+
+            // 모바일 회원가입 (추가된 기능!)
+            document.getElementById("mSignupBtn").onclick = async () => {
+              const email = getMEmail();
+              const mPw = document.getElementById("mPw").value;
+              if (!mPw) return alert("비밀번호를 입력해주세요!");
+
+              try {
+                await createUserWithEmailAndPassword(auth, email, mPw);
+                alert("가족이 되신 걸 환영합니다! ❤️");
+                sidebar.classList.remove("is-open");
+                document
+                  .getElementById("sidebarOverlay")
+                  .classList.remove("is-active");
+              } catch (e) {
+                alert("가입 실패: " + e.message);
               }
             };
           }
