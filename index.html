@@ -3,17 +3,352 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <title>My Note</title>
-
-    <!-- CSS 연결 -->
+    <title>love2note</title>
     <link rel="stylesheet" href="style.css" />
   </head>
+
   <body>
-    <!-- 지금은 비워둬도 됨 -->
-    <!-- 나중에 여기서 HTML 짜면 돼 -->
-    <h1>It works</h1>
+    <header class="topbar">
+      <div class="topbar__left">
+        <button class="iconbtn" id="menuBtn">☰</button>
+        <a class="brand" href="javascript:location.reload()">
+          <span class="brand__mark">🍃</span>
+          <span class="brand__name">love2note</span>
+        </a>
+      </div>
+
+      <div class="topbar__right">
+        <div class="search">
+          <input class="search__input" placeholder="검색" />
+          <button class="search__btn">⌕</button>
+        </div>
+        <button class="avatar"><span>🙂</span></button>
+      </div>
+    </header>
+
+    <div class="layout">
+      <aside class="sidebar" id="sidebar">
+        <div class="sidecard">
+          <div class="sidecard__head">
+            <div class="sidecard__title">📁 카테고리</div>
+          </div>
+
+          <nav class="sidelist">
+            <a class="sidelist__item is-active" href="#" data-view="schedule">
+              <span class="sidelist__icon">🏠</span>
+              <span class="sidelist__text">전체 글 (홈)</span>
+            </a>
+            <a class="sidelist__item" href="#" data-view="diary">
+              <span class="sidelist__icon">📖</span>
+              <span class="sidelist__text">일기장</span>
+            </a>
+            <a class="sidelist__item" href="#" data-view="memo">
+              <span class="sidelist__icon">📝</span>
+              <span class="sidelist__text">개인 메모</span>
+            </a>
+            <a class="sidelist__item" href="#" data-view="ledger">
+              <span class="sidelist__icon">💰</span>
+              <span class="sidelist__text">가계부</span>
+            </a>
+          </nav>
+        </div>
+      </aside>
+
+      <main class="main">
+        <section class="card" id="view-schedule">
+          <div class="card__head">
+            <h2 class="card__title">일정</h2>
+            <button class="btn btn--ghost" id="toggleCalView">
+              간략히보기
+            </button>
+          </div>
+
+          <div class="calendar-container" id="calendarContainer">
+            <div class="calendar-selected">
+              <div class="cal-nav">
+                <button id="calPrev">◀</button>
+                <span id="calYM">2026.01</span>
+                <button id="calNext">▶</button>
+              </div>
+              <div class="selected-day-big" id="selectedDayNum">23</div>
+              <div class="selected-day-text" id="selectedDayName">(금요일)</div>
+
+              <button class="btn btn--add" id="openAddForm">+ 추가</button>
+            </div>
+
+            <div class="calendar-grid-wrapper">
+              <div class="calendar-grid" id="calendarGrid"></div>
+            </div>
+          </div>
+
+          <div class="schedule-form" id="scheduleForm" hidden>
+            <div class="form-header">
+              <span id="formDateText">2026.01.23</span>
+              <div class="form-btns">
+                <button class="btn btn--save" id="saveSchedule">저장</button>
+                <button class="btn btn--cancel" id="closeAddForm">취소</button>
+              </div>
+            </div>
+            <input
+              type="text"
+              class="field__input"
+              id="schedTitle"
+              placeholder="여기에 제목을 입력하세요"
+            />
+            <textarea
+              class="field__input textarea--sm"
+              id="schedContent"
+              placeholder="여기에 내용을 입력하세요"
+            ></textarea>
+          </div>
+
+          <div class="schedule-list-footer" id="scheduleDisplay">
+            등록된 일정이 없습니다.
+          </div>
+        </section>
+
+        <section class="card" id="view-memo" hidden>
+          <div class="card__head">
+            <h2 class="card__title">개인 메모</h2>
+            <button class="btn btn--primary" id="memoNewBtn">+ 새 메모</button>
+          </div>
+          <div class="memo-layout">
+            <div class="memo-list" id="memoList"></div>
+            <div class="memo-editor">
+              <input class="field__input" id="memoTitle" placeholder="제목" />
+              <textarea
+                class="field__input textarea"
+                id="memoContent"
+                placeholder="내용"
+              ></textarea>
+              <button class="btn btn--primary" id="memoSaveBtn">저장</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="card" id="view-diary" hidden>
+          <h2>일기장 준비 중...</h2>
+        </section>
+        <section class="card" id="view-ledger" hidden>
+          <h2>가계부 준비 중...</h2>
+        </section>
+
+        <div class="dashboard" id="dashboard-area">
+          <div class="dashboard__row">
+            <section class="card dashboard__memo">
+              <div class="card__head">
+                <h3 class="card__subtitle">📝 최근 메모</h3>
+                <button class="btn btn--ghost" onclick="setView('memo')">
+                  전체보기
+                </button>
+              </div>
+              <div class="memo-gallery">
+                <div class="memo-card">
+                  <div class="memo-card__title">오늘의 아이디어</div>
+                  <div class="memo-card__desc">
+                    새로운 개인 사이트 레이아웃 수정하기...
+                  </div>
+                </div>
+                <div class="memo-card">
+                  <div class="memo-card__title">장보기 목록</div>
+                  <div class="memo-card__desc">
+                    사과, 우유, 시리얼, 세이지 그린 페인트...
+                  </div>
+                </div>
+                <div class="memo-card">
+                  <div class="memo-card__title">비밀번호 찾기</div>
+                  <div class="memo-card__desc">
+                    잊어버리지 않게 조심해야 할 것들...
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="card dashboard__spending">
+              <div class="card__head">
+                <h3 class="card__subtitle">💰 이번 달 소비</h3>
+              </div>
+              <div class="spending-box">
+                <div class="spending-amount">450,000원</div>
+                <div class="spending-bar-container">
+                  <div class="spending-bar" style="width: 65%"></div>
+                </div>
+                <p class="spending-hint">
+                  지난달보다 <strong>12,000원</strong> 덜 썼어요!
+                </p>
+              </div>
+            </section>
+          </div>
+        </div>
+      </main>
+
+      <aside class="right">
+        <section class="panel">
+          <div class="panel__head">
+            <div class="panel__title">로그인</div>
+          </div>
+          <form class="login" onsubmit="return false;">
+            <input class="field__input" type="email" placeholder="이메일" />
+            <input
+              class="field__input"
+              type="password"
+              placeholder="비밀번호"
+            />
+            <button class="btn btn--primary w-full">로그인</button>
+          </form>
+        </section>
+      </aside>
+    </div>
+
+    <script>
+      // 1. 뷰 전환 로직
+      const sideItems = document.querySelectorAll(".sidelist__item[data-view]");
+      const sections = {
+        schedule: document.getElementById("view-schedule"),
+        memo: document.getElementById("view-memo"),
+        diary: document.getElementById("view-diary"),
+        ledger: document.getElementById("view-ledger"),
+      };
+
+      function setView(viewName) {
+        Object.keys(sections).forEach((key) => {
+          if (sections[key]) sections[key].hidden = key !== viewName;
+        });
+        sideItems.forEach((item) => {
+          item.classList.toggle("is-active", item.dataset.view === viewName);
+        });
+        const dashboard = document.getElementById("dashboard-area");
+        if (dashboard) {
+          dashboard.style.display = viewName === "schedule" ? "block" : "none";
+        }
+      }
+
+      sideItems.forEach((item) => {
+        item.addEventListener("click", (e) => {
+          e.preventDefault();
+          setView(item.dataset.view);
+        });
+      });
+
+      // 2. 중앙 달력 로직 (수정된 구조용)
+      let today = new Date();
+      let viewYear = today.getFullYear();
+      let viewMonth = today.getMonth();
+
+      const calGrid = document.getElementById("calendarGrid");
+      const calYM = document.getElementById("calYM");
+      const selectedDayNum = document.getElementById("selectedDayNum");
+      const selectedDayName = document.getElementById("selectedDayName");
+
+      function buildCalendar(y, m) {
+        calGrid.innerHTML = "";
+        calYM.textContent = `${y}.${String(m + 1).padStart(2, "0")}`;
+
+        const firstDay = new Date(y, m, 1).getDay();
+        const lastDate = new Date(y, m + 1, 0).getDate();
+        const dayNames = ["일", "월", "화", "수", "목", "금", "토"];
+
+        // 요일 헤더
+        dayNames.forEach((d) => {
+          const div = document.createElement("div");
+          div.className = "calendar-grid__wk";
+          div.textContent = d;
+          calGrid.appendChild(div);
+        });
+
+        // 빈 칸
+        for (let i = 0; i < firstDay; i++) {
+          const div = document.createElement("div");
+          calGrid.appendChild(div);
+        }
+
+        // 날짜
+        for (let d = 1; d <= lastDate; d++) {
+          const btn = document.createElement("button");
+          btn.className = "calendar-grid__day";
+          btn.textContent = d;
+
+          // 오늘 표시
+          if (
+            y === today.getFullYear() &&
+            m === today.getMonth() &&
+            d === today.getDate()
+          ) {
+            btn.classList.add("is-today");
+          }
+
+          btn.onclick = () => {
+            document
+              .querySelectorAll(".calendar-grid__day")
+              .forEach((b) => b.classList.remove("is-selected"));
+            btn.classList.add("is-selected");
+            updateSelectedDate(y, m, d);
+          };
+          calGrid.appendChild(btn);
+        }
+
+        // 초기 선택일 설정 (오늘)
+        updateSelectedDate(y, m, today.getDate());
+      }
+
+      function updateSelectedDate(y, m, d) {
+        const date = new Date(y, m, d);
+        const weeks = [
+          "일요일",
+          "월요일",
+          "화요일",
+          "수요일",
+          "목요일",
+          "금요일",
+          "토요일",
+        ];
+        selectedDayNum.textContent = d;
+        selectedDayName.textContent = `(${weeks[date.getDay()]})`;
+        // 여기서 나중에 해당 날짜의 일정을 DB나 LocalStorage에서 불러오면 됩니다.
+      }
+
+      document.getElementById("calPrev").onclick = () => {
+        viewMonth--;
+        if (viewMonth < 0) {
+          viewMonth = 11;
+          viewYear--;
+        }
+        buildCalendar(viewYear, viewMonth);
+      };
+      document.getElementById("calNext").onclick = () => {
+        viewMonth++;
+        if (viewMonth > 11) {
+          viewMonth = 0;
+          viewYear++;
+        }
+        buildCalendar(viewYear, viewMonth);
+      };
+
+      // 초기 실행
+      buildCalendar(viewYear, viewMonth);
+
+      const toggleBtn = document.getElementById("toggleCalView");
+      const calContainer = document.getElementById("calendarContainer");
+      const openAddBtn = document.getElementById("openAddForm");
+      const closeAddBtn = document.getElementById("closeAddForm");
+      const scheduleForm = document.getElementById("scheduleForm");
+
+      // 1. 간략히/자세히 보기 토글
+      toggleBtn.onclick = () => {
+        const isSummary = calContainer.classList.toggle("is-summary");
+        toggleBtn.textContent = isSummary ? "자세히보기" : "간략히보기";
+      };
+
+      // 2. 일정 추가 폼 열기/닫기
+      openAddBtn.onclick = () => {
+        scheduleForm.hidden = false;
+        document.getElementById("formDateText").textContent =
+          calYM.textContent + "." + selectedDayNum.textContent;
+      };
+
+      closeAddBtn.onclick = () => {
+        scheduleForm.hidden = true;
+      };
+    </script>
   </body>
 </html>
-
-
