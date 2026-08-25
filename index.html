@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>제주 2박 3일 · 8월 31일 – 9월 2일</title>
+<meta name="description" content="제주 2박 3일 여행 일정과 동선">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --haze:#EDF1F0;
+    --paper:#FFFFFF;
+    --ink:#15252A;
+    --ink-soft:#5A6B6E;
+    --sea:#0E6B78;
+    --tangerine:#D8660A;
+    --stone:#C7D0CD;
+    --stone-faint:#DFE5E3;
+    --land:#F7F9F8;
+    --display:"Gowun Batang","Apple SD Gothic Neo",serif;
+    --body:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--haze);
+    color:var(--ink);
+    font-family:var(--body);
+    font-size:16px;
+    line-height:1.6;
+    -webkit-text-size-adjust:100%;
+  }
+  .wrap{max-width:520px;margin:0 auto;padding:0 20px 64px;}
+
+  header{padding:44px 0 28px;}
+  .eyebrow{
+    font-size:13px;letter-spacing:.22em;color:var(--sea);
+    font-weight:700;margin:0 0 14px;
+  }
+  h1{
+    font-family:var(--display);
+    font-size:40px;line-height:1.25;font-weight:700;
+    margin:0 0 12px;letter-spacing:-.01em;
+  }
+  h1 .thin{display:block;font-size:22px;font-weight:400;color:var(--ink-soft);margin-top:6px;}
+  .meta{
+    display:flex;flex-wrap:wrap;gap:6px 18px;
+    font-size:14px;color:var(--ink-soft);margin:18px 0 0;
+    padding-top:18px;border-top:1px solid var(--stone);
+  }
+  .meta b{color:var(--ink);font-weight:500;}
+
+  nav{
+    position:sticky;top:0;z-index:5;
+    background:var(--haze);
+    padding:12px 0;margin-bottom:18px;
+    display:flex;gap:8px;
+  }
+  nav::after{
+    content:"";position:absolute;left:-20px;right:-20px;bottom:0;
+    height:1px;background:var(--stone);
+  }
+  .tab{
+    flex:1;appearance:none;border:1px solid var(--stone);
+    background:transparent;color:var(--ink-soft);
+    font-family:var(--body);font-size:15px;font-weight:500;
+    padding:11px 4px;border-radius:2px;cursor:pointer;
+    transition:background .15s,color .15s,border-color .15s;
+  }
+  .tab:hover{border-color:var(--sea);color:var(--sea);}
+  .tab[aria-selected="true"]{background:var(--ink);border-color:var(--ink);color:#fff;}
+  .tab:focus-visible{outline:2px solid var(--tangerine);outline-offset:2px;}
+
+  .map-frame{
+    border:1px solid var(--stone);background:var(--paper);
+    padding:10px;margin-bottom:32px;
+  }
+  .map-frame svg{display:block;width:100%;height:auto;}
+
+  .daytitle{font-family:var(--display);font-size:24px;font-weight:700;margin:0 0 4px;}
+  .daysub{font-size:14px;color:var(--ink-soft);margin:0 0 26px;}
+
+  .stop{display:grid;grid-template-columns:34px 1fr;gap:14px;align-items:start;}
+  .num{
+    width:34px;height:34px;border-radius:50%;
+    background:var(--ink);color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    font-size:14px;font-weight:700;font-variant-numeric:tabular-nums;
+  }
+  .stop.pick .num{background:var(--paper);color:var(--tangerine);border:1px dashed var(--tangerine);}
+  .card{background:var(--paper);border:1px solid var(--stone-faint);padding:15px 16px;}
+  .stop.pick .card{border-style:dashed;border-color:var(--tangerine);}
+  .place{font-size:19px;font-weight:700;margin:0;line-height:1.35;}
+  .tag{
+    display:inline-block;vertical-align:2px;margin-left:7px;
+    font-size:11.5px;font-weight:700;letter-spacing:.04em;
+    color:var(--tangerine);border:1px solid var(--tangerine);
+    padding:1px 6px;border-radius:2px;
+  }
+  .nav-link{
+    display:inline-block;margin-top:9px;font-size:13.5px;
+    color:var(--sea);text-decoration:none;font-weight:500;
+    border-bottom:1px solid var(--stone);padding-bottom:1px;
+  }
+  .nav-link:hover{border-color:var(--sea);}
+  .nav-link:focus-visible{outline:2px solid var(--tangerine);outline-offset:3px;}
+
+  .leg{
+    display:grid;grid-template-columns:34px 1fr;gap:14px;
+    align-items:center;height:54px;
+  }
+  .rail{
+    justify-self:center;width:1px;height:100%;
+    background:repeating-linear-gradient(to bottom,var(--stone) 0 4px,transparent 4px 9px);
+  }
+  .legtime{font-size:13.5px;color:var(--ink-soft);letter-spacing:.02em;}
+  .legtime b{color:var(--ink);font-weight:700;font-variant-numeric:tabular-nums;}
+  .legtime .walk{color:var(--tangerine);}
+
+  [hidden]{display:none !important;}
+  @media (prefers-reduced-motion:reduce){*{transition:none !important;}}
+  @media (min-width:560px){h1{font-size:46px;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">JEJU · 2박 3일</p>
+    <h1>제주 여행 일정표<span class="thin">8월 31일 월요일 – 9월 2일 수요일</span></h1>
+    <p class="meta">
+      <span>숙소 <b>호텔 난타</b></span>
+      <span>이동 <b>렌터카</b></span>
+      <span>도착 <b>8/31 11:50</b></span>
+      <span>출발 <b>9/2 12:05</b></span>
+    </p>
+  </header>
+
+  <nav role="tablist" aria-label="날짜 선택">
+    <button class="tab" role="tab" id="tab-1" aria-controls="day-1" aria-selected="true">1일차</button>
+    <button class="tab" role="tab" id="tab-2" aria-controls="day-2" aria-selected="false">2일차</button>
+    <button class="tab" role="tab" id="tab-3" aria-controls="day-3" aria-selected="false">3일차</button>
+  </nav>
+
+  <div class="map-frame"><svg id="map" viewBox="-40 -34 1080 648" role="img" aria-label="제주도 지도 위 하루 동선"></svg></div>
+
+  <section id="day-1" role="tabpanel" aria-labelledby="tab-1"></section>
+  <section id="day-2" role="tabpanel" aria-labelledby="tab-2" hidden></section>
+  <section id="day-3" role="tabpanel" aria-labelledby="tab-3" hidden></section>
+
+</div>
+
+<script>
+/* ── 제주도 해안선 ── */
+const COAST = [
+  [33.525,126.530],[33.545,126.600],[33.552,126.645],[33.556,126.700],[33.564,126.760],
+  [33.560,126.815],[33.548,126.860],[33.522,126.900],[33.487,126.928],[33.462,126.946],
+  [33.435,126.930],[33.412,126.918],[33.388,126.898],[33.355,126.872],[33.318,126.838],
+  [33.292,126.790],[33.270,126.735],[33.252,126.672],[33.240,126.612],[33.234,126.560],
+  [33.236,126.505],[33.240,126.462],[33.242,126.412],[33.230,126.352],[33.212,126.310],
+  [33.199,126.283],[33.208,126.254],[33.232,126.213],[33.262,126.178],[33.297,126.160],
+  [33.328,126.170],[33.352,126.192],[33.382,126.223],[33.407,126.244],[33.437,126.276],
+  [33.462,126.315],[33.478,126.352],[33.492,126.398],[33.502,126.437],[33.510,126.468],
+  [33.515,126.500]
+];
+const UDO = [[33.512,126.952],[33.521,126.972],[33.508,126.988],[33.495,126.968]];
+
+const LON0=126.13, LON1=127.00, LAT0=33.18, LAT1=33.60;
+const W=1000, H=Math.round(W*((LAT1-LAT0)*110.9)/((LON1-LON0)*92.9));
+const px = ll => [ (ll[1]-LON0)/(LON1-LON0)*W, (LAT1-ll[0])/(LAT1-LAT0)*H ];
+const path = arr => arr.map(px).map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ');
+
+const DAYS = {
+  1: {
+    title:"동쪽 바다와 성산일출봉", sub:"8월 31일 월요일",
+    stops:[
+      {n:1,name:"제주국제공항",lat:33.5070772,lng:126.4934311,q:"제주국제공항"},
+      {leg:"공항에서 <b>30분</b>"},
+      {n:2,name:"고집돌우럭 함덕점",lat:33.5438111,lng:126.6630159,q:"고집돌우럭 함덕점"},
+      {leg:'<span class="walk">걸어서 <b>7분</b></span>'},
+      {n:3,name:"함덕해수욕장",pick:true,lat:33.5434231,lng:126.6697752,q:"함덕해수욕장"},
+      {leg:"성산까지 <b>1시간</b>"},
+      {n:4,name:"성산일출봉",lat:33.458056,lng:126.9425,q:"성산일출봉"},
+      {leg:"차로 <b>12분</b>"},
+      {n:5,name:"섭지코지",pick:true,lat:33.4242095,lng:126.931111,q:"섭지코지"},
+      {leg:"제주시까지 <b>1시간</b>"},
+      {n:6,name:"제주예찬",lat:33.4540988,lng:126.4869609,q:"제주예찬 공항본점"},
+      {leg:"숙소까지 <b>15분</b>"},
+      {n:7,name:"호텔 난타",lat:33.4458234,lng:126.5479559,q:"호텔난타"}
+    ]
+  },
+  2: {
+    title:"한라산 영실과 서귀포", sub:"9월 1일 화요일",
+    stops:[
+      {n:1,name:"호텔 난타 출발",lat:33.4458234,lng:126.5479559,q:"호텔난타"},
+      {leg:"영실까지 <b>40분</b>"},
+      {n:2,name:"영실 탐방로",lat:33.3491902,lng:126.4970597,q:"한라산 영실탐방로"},
+      {leg:"숙소까지 <b>40분</b>"},
+      {n:3,name:"호텔 난타",lat:33.4458234,lng:126.5479559,q:"호텔난타"},
+      {leg:"중문까지 <b>50분</b>"},
+      {n:4,name:"본가장어 서귀포점",lat:33.2565354,lng:126.4122352,q:"본가장어 서귀포점"},
+      {leg:"시장까지 <b>30분</b>"},
+      {n:5,name:"서귀포 매일올레시장",lat:33.2487163,lng:126.5640617,q:"서귀포 매일올레시장"},
+      {leg:"숙소까지 <b>50분</b>"},
+      {n:6,name:"호텔 난타",lat:33.4458234,lng:126.5479559,q:"호텔난타"}
+    ]
+  },
+  3: {
+    title:"천천히 공항으로", sub:"9월 2일 수요일",
+    stops:[
+      {n:1,name:"호텔 난타 체크아웃",lat:33.4458234,lng:126.5479559,q:"호텔난타"},
+      {leg:"공항 근처까지 <b>20분</b>"},
+      {n:2,name:"렌터카 반납",lat:33.5029,lng:126.4993,q:"제주공항 렌터카하우스"},
+      {leg:"셔틀 <b>15분</b>"},
+      {n:3,name:"제주국제공항",lat:33.5070772,lng:126.4934311,q:"제주국제공항"}
+    ]
+  }
+};
+
+/* ── 목록 ── */
+function render(day){
+  const d = DAYS[day];
+  let html = '<h2 class="daytitle">'+d.title+'</h2><p class="daysub">'+d.sub+'</p>';
+  d.stops.forEach(s=>{
+    if(s.leg){
+      html += '<div class="leg"><div class="rail"></div><div class="legtime">'+s.leg+'</div></div>';
+      return;
+    }
+    html += '<div class="stop'+(s.pick?' pick':'')+'">'
+      + '<div class="num">'+s.n+'</div><div class="card">'
+      + '<p class="place">'+s.name+(s.pick?'<span class="tag">상황 보고</span>':'')+'</p>'
+      + '<a class="nav-link" href="https://map.naver.com/p/search/'+encodeURIComponent(s.q)+'" target="_blank" rel="noopener">네이버 지도에서 열기</a>'
+      + '</div></div>';
+  });
+  document.getElementById('day-'+day).innerHTML = html;
+}
+[1,2,3].forEach(render);
+
+/* ── 지도 ── */
+const svg = document.getElementById('map');
+const NS = 'http://www.w3.org/2000/svg';
+function el(tag,attrs,text){
+  const n=document.createElementNS(NS,tag);
+  for(const k in attrs) n.setAttribute(k,attrs[k]);
+  if(text!=null) n.textContent=text;
+  return n;
+}
+
+function drawMap(day){
+  svg.innerHTML='';
+  svg.appendChild(el('polygon',{points:path(COAST),fill:'var(--land)',stroke:'var(--stone)','stroke-width':2.5,'stroke-linejoin':'round'}));
+  svg.appendChild(el('polygon',{points:path(UDO),fill:'var(--land)',stroke:'var(--stone)','stroke-width':2.5}));
+
+  // 한라산
+  const h = px([33.362,126.533]);
+  svg.appendChild(el('path',{d:'M'+(h[0]-17)+','+(h[1]+11)+' L'+h[0]+','+(h[1]-13)+' L'+(h[0]+17)+','+(h[1]+11)+' Z',fill:'none',stroke:'var(--stone)','stroke-width':2.5,'stroke-linejoin':'round'}));
+  svg.appendChild(el('text',{x:h[0],y:h[1]+34,'text-anchor':'middle','font-size':22,fill:'var(--stone)','font-family':'var(--body)','font-weight':500},'한라산'));
+
+  // 경로
+  const stops = DAYS[day].stops.filter(s=>!s.leg);
+  const line = stops.map(s=>px([s.lat,s.lng]));
+  svg.appendChild(el('polyline',{points:line.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' '),fill:'none',stroke:'var(--sea)','stroke-width':2.5,'stroke-dasharray':'7 7','stroke-opacity':.75,'stroke-linejoin':'round'}));
+
+  // 같은 자리는 하나로 합치기
+  const seen={};
+  stops.forEach(s=>{
+    const k=s.lat+','+s.lng;
+    if(seen[k]) seen[k].nums.push(s.n);
+    else seen[k]={...s,nums:[s.n]};
+  });
+
+  Object.values(seen).forEach(s=>{
+    const p=px([s.lat,s.lng]);
+    const label=s.nums.join('·');
+    const wide=label.length>1;
+    const g=el('g',{});
+    if(wide){
+      g.appendChild(el('rect',{x:p[0]-26,y:p[1]-17,width:52,height:34,rx:17,fill:s.pick?'var(--paper)':'var(--ink)',stroke:s.pick?'var(--tangerine)':'var(--paper)','stroke-width':s.pick?2:3,'stroke-dasharray':s.pick?'4 4':'none'}));
+    }else{
+      g.appendChild(el('circle',{cx:p[0],cy:p[1],r:17,fill:s.pick?'var(--paper)':'var(--ink)',stroke:s.pick?'var(--tangerine)':'var(--paper)','stroke-width':s.pick?2:3,'stroke-dasharray':s.pick?'4 4':'none'}));
+    }
+    g.appendChild(el('text',{x:p[0],y:p[1]+7,'text-anchor':'middle','font-size':20,'font-weight':700,fill:s.pick?'var(--tangerine)':'#fff','font-family':'var(--body)'},label));
+
+    const right = p[0] > W*0.62;
+    g.appendChild(el('text',{
+      x: right ? p[0]-(wide?32:23) : p[0]+(wide?32:23),
+      y: p[1]+7,'text-anchor': right?'end':'start',
+      'font-size':21,fill:'var(--ink-soft)','font-family':'var(--body)','font-weight':500
+    }, s.name.replace(' 출발','').replace(' 체크아웃','')));
+    svg.appendChild(g);
+  });
+}
+drawMap(1);
+
+/* ── 탭 ── */
+const tabs=document.querySelectorAll('.tab');
+tabs.forEach(t=>{
+  t.addEventListener('click',()=>{
+    const day=t.id.split('-')[1];
+    tabs.forEach(o=>{
+      o.setAttribute('aria-selected',o===t?'true':'false');
+      document.getElementById('day-'+o.id.split('-')[1]).hidden=(o!==t);
+    });
+    drawMap(day);
+    window.scrollTo({top:0,behavior:'smooth'});
+  });
+});
+</script>
+</body>
+</html>
